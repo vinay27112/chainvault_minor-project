@@ -1,0 +1,9 @@
+# 🔐 Environment variables (VERY IMPORTANT)
+.env
+.env.*
+!.env.example
+
+# 📦 Node modules
+node_modules/
+
+.DS_Store
