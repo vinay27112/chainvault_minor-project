@@ -10,7 +10,12 @@ import docRouter from "./routes/docRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({ credentials: true }));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 app.use(express.json());
 
