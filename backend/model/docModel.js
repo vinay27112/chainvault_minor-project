@@ -15,13 +15,6 @@ const docSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    /* documentId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    for working with centralized file storage like AWS S3, Google Cloud Storage, etc. We can store the file URL or unique identifier here instead of the actual file data in MongoDB.
-    */
     fileName: {
       type: String,
       required: true,
