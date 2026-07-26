@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../model/userModel.js";
-import transporter from "../config/nodemailer.js";
+//import transporter from "../config/nodemailer.js";
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -37,14 +37,14 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: "Welcome to NuraBytes!",
-      text: `Hello ${name},\n\nThank you for registering at NuraBytes. We're excited to have you on board!\n\nBest regards,\nThe NuraBytes Team`,
-    };
+    // const mailOptions = {
+    //   from: process.env.SENDER_EMAIL,
+    //   to: email,
+    //   subject: "Welcome to NuraBytes!",
+    //   text: `Hello ${name},\n\nThank you for registering at NuraBytes. We're excited to have you on board!\n\nBest regards,\nThe NuraBytes Team`,
+    // };
 
-    await transporter.sendMail(mailOptions);
+    //await transporter.sendMail(mailOptions);
 
     res
       .status(201)
@@ -107,56 +107,56 @@ export const logout = async (req, res) => {
   }
 };
 
-export const sendVerifyOtp = async (req, res) => {
-  try {
-    const userID = req.user.id; // from auth middleware
+// export const sendVerifyOtp = async (req, res) => {
+//   try {
+//     const userID = req.user.id; // from auth middleware
 
-    const user = await userModel.findById(userID);
+//     const user = await userModel.findById(userID);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
 
-    if (user.isAccountVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "Account already verified",
-      });
-    }
+//     if (user.isAccountVerified) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Account already verified",
+//       });
+//     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    user.verifyOtp = otp;
-    user.verifyOtpExpireAt = Date.now() + 10 * 60 * 1000;
-    await user.save();
+//     user.verifyOtp = otp;
+//     user.verifyOtpExpireAt = Date.now() + 10 * 60 * 1000;
+//     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Your Verification OTP",
-      text: `Hello ${user.name},
+//     await transporter.sendMail({
+//       from: process.env.SENDER_EMAIL,
+//       to: user.email,
+//       subject: "Your Verification OTP",
+//       text: `Hello ${user.name},
 
-Your OTP for account verification is: ${otp}
-It is valid for 10 minutes.
+// Your OTP for account verification is: ${otp}
+// It is valid for 10 minutes.
 
-Regards,
-NuraBytes Team`,
-    });
+// Regards,
+// NuraBytes Team`,
+//     });
 
-    return res.status(200).json({
-      success: true,
-      message: "OTP sent to your email",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       message: "OTP sent to your email",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 
 export const verifyEmail = async (req, res) => {
   try {
@@ -221,45 +221,45 @@ export const isAuthenticated = async (req, res) => {
   }
 };
 
-export const sendResetOtp = async (req, res) => {
-  const { email } = req.body;
+// export const sendResetOtp = async (req, res) => {
+//   const { email } = req.body;
 
-  if (!email) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Email is required" });
-  }
+//   if (!email) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "Email is required" });
+//   }
 
-  try {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   try {
+//     const user = await userModel.findOne({ email });
+//     if (!user) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found" });
+//     }
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    user.resetOtp = otp;
-    user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-    await user.save();
+//     user.resetOtp = otp;
+//     user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+//     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: user.email,
-      subject: "Your Password Reset OTP",
-      text: `Hello ${user.name},
+//     await transporter.sendMail({
+//       from: process.env.SENDER_EMAIL,
+//       to: user.email,
+//       subject: "Your Password Reset OTP",
+//       text: `Hello ${user.name},
 
-        Your OTP for password reset is: ${otp}
-        It is valid for 10 minutes.
+//         Your OTP for password reset is: ${otp}
+//         It is valid for 10 minutes.
 
-        Regards,
-        NuraBytes Team`,
-    });
-    res.status(200).json({ success: true, message: "OTP sent to your email" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+//         Regards,
+//         NuraBytes Team`,
+//     });
+//     res.status(200).json({ success: true, message: "OTP sent to your email" });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 
 export const resetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
